@@ -12,8 +12,13 @@ require([
 var ROOMID = '',
     PUBLICKEY = null,  // HEX
     PRIVATEKEY = null, // HEX
-    MEMBERS = {};
+    MEMBERS = {},
+    LOCALID = null;
 var socket = socketIO('//');
+socket.on('connect', function(){
+    LOCALID = socket.io.engine.id;
+    console.log('Local Socket ID: ' + LOCALID);
+});
 
 //---------- generate local private and public key
 
@@ -45,8 +50,54 @@ if(/^[0-9a-z]{14,}$/.test(urlhash)){
 
 // ---------- join room
 
+socket.on('error-join-room', function(){});
 socket.emit('join', ROOMID);
 
+
+// ---------- upon receving broadcasted messages
+
+socket.on('broadcast', function(d){
+    var from = d.from, data = d.data;
+    if(from == LOCALID) return;
+    if(!MEMBERS[from]) MEMBERS[from] = {};
+
+    // if received a public key the first time from a member
+
+    if(/^[0-9a-f]{64}$/i.test(data.publicKey)){
+        if(undefined === MEMBERS[from]['key']){
+            console.log('From ' + from + ' got public key.');
+            var sharedsecret = getSharedSecret(data.publicKey);
+            MEMBERS[from]['key'] = sharedsecret;
+            MEMBERS[from]['key.hash'] =
+                new crypto.hash(6).hash(sharedsecret).hex;
+            console.log(MEMBERS[from]['key.hash'])
+        }
+    };
+
+});
+
+// ---------- broadcast local public key
+function broadcastLocalPublicKey(){
+    socket.emit('broadcast', {publicKey: PUBLICKEY});
+};
+broadcastLocalPublicKey();
+
+// ---------- upon getting member update
+
+socket.on('update', function(data){
+    var del = [];
+    for(var uid in MEMBERS) if(data.indexOf(uid) < 0) del.push(uid);
+    for(var i in del) delete MEMBERS[del[i]];
+    var sawNewMember = false;
+    for(var i in data){
+        var uid = data[i];
+        if(!MEMBERS[uid]){
+            MEMBERS[uid] = {};
+            sawNewMember = true;
+        };
+    };
+    if(sawNewMember) broadcastLocalPublicKey();
+});
 
 //////////////////////////////////////////////////////////////////////////////
 });

@@ -5,13 +5,27 @@ var http = require('http').createServer(onHTTP),
 
 function onSocket(socket){
     socket.__data = {};
+
+    function sendRoomUpdate(room){
+        var list = Object.keys(io.nsps['/'].adapter.rooms[room]);
+        io.to(room).emit('update', list);
+    }
+
     socket.on('join', function(room){
         if(socket.__data.room) return socket.emit('error-join-room');
         if(!/^[0-9a-z]{14,}$/i.test(room))
             return socket.emit('error-join-room');
         socket.join(room.toLowerCase());
         socket.__data.room = room;
-        socket.emit('success-join-room');
+        sendRoomUpdate(room);
+        io.sockets.in(room).on('leave', function(){ sendRoomUpdate(room); });
+    });
+    socket.on('broadcast', function(data){
+        if(!socket.__data.room) return;
+        io.to(socket.__data.room).emit('broadcast', {
+            from: socket.id,
+            data: data,
+        });
     });
 };
 
