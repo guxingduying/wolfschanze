@@ -7,6 +7,8 @@ require([
     socketIO,
     curve25519
 ){
+var CONSTANT_NICKNAME_MAXLENGTH = 20,
+    CONSTANT_NICKNAME_MINLENGTH = 2;
 //////////////////////////////////////////////////////////////////////////////
 
 var ROOMID = '',
@@ -62,16 +64,22 @@ socket.on('broadcast', function(d){
     if(!MEMBERS[from]) MEMBERS[from] = {};
 
     // if received a public key the first time from a member
-
     if(/^[0-9a-f]{64}$/i.test(data.publicKey)){
         if(undefined === MEMBERS[from]['key']){
-            console.log('From ' + from + ' got public key.');
             var sharedsecret = getSharedSecret(data.publicKey);
             MEMBERS[from]['key'] = sharedsecret;
             MEMBERS[from]['key.hash'] =
                 new crypto.hash(6).hash(sharedsecret).hex;
-            console.log(MEMBERS[from]['key.hash'])
-        }
+        };
+    };
+
+    // if received an update of nickname
+    if(
+        crypto.util.type(data.nickname).isString() &&
+        data.nickname.length < CONSTANT_NICKNAME_MAXLENGTH &&
+        data.nickname.length > CONSTANT_NICKNAME_MINLENGTH
+    ){
+        MEMBERS[from]['nickname'] = data.nickname;
     };
 
 });
