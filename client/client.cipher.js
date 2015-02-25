@@ -3,64 +3,50 @@ define([
     'curve25519'
 ], function(crypto, curve25519){
 //////////////////////////////////////////////////////////////////////////////
-function cipher(){
+function cipher(localID){
     var self = this;
 
-    var PRIVATEKEY = crypto.util.encoding(
-        new crypto.util.srand().bytes(32)
-    ).toHEX();
-    var PUBLICKEY = curve25519.hexEncode(curve25519.cipher(
-        curve25519.hexDecode(PRIVATEKEY)
-    ));
+    var peers = {};
 
-    var peerKeys = {};
+    var LOCALIDENTITY = crypto.enigma.identity();
+    LOCALIDENTITY.generate(localID, { algorithm: 'NECRAC128' });
 
-    function importPeerPublicKey(peerPublicKeyHEX){
-        if(!/^[0-9a-f]{64}$/.test(peerPublicKeyHEX)) return false;
-        if(peerKeys[peerPublicKeyHEX]) return peerKeys[peerPublicKeyHEX];
-        var sharedsecretHEX = curve25519.hexEncode(curve25519.cipher(
-            curve25519.hexDecode(PRIVATEKEY),
-            curve25519.hexDecode(peerPublicKeyHEX)
-        ));
-        var sharedsecret = crypto.util.encoding(
-            sharedsecretHEX,
-            'hex'
-        ).toArrayBuffer();
-        var fingerprint = new crypto.hash(6).hash(sharedsecret).hex;
-        peerKeys[peerPublicKeyHEX] = {
-            pk: peerPublicKeyHEX,
-            ss: sharedsecret,
-            fp: fingerprint,
+    this.showLocalIdentity = function(){
+        return LOCALIDENTITY.exportPublic();
+    };
+
+    this.showLocalFingerprint = function(){
+        return LOCALIDENTITY.getFingerprint(true);
+    };
+
+    this.setPeer = function(peerPublic, checks){
+        /*
+           Set a public identity from a peer.
+           Given public identity will only be accepted, when subject matches
+           the id reported by socketIO, which is not very important, but
+           should be.
+        */
+        try{
+            var peer = crypto.enigma.identity();
+            var fingerprint, subject;
+            peer.loadPublic(peerPublic);
+            fingerprint = peer.getFingerprint(true);
+            subject = peer.getSubject();
+            if(subject != checks.id) return false; // just a feature
+            peers[fingerprint] = peer;
+            return fingerprint;
+        } catch(e){
+            return false;
         };
-        return peerKeys[peerPublicKeyHEX];
     };
 
-    this.getPublicKey = function(){
-        return PUBLICKEY.toLowerCase();
-    };
-
-    this.peerPublicKey = function(peerPublicKeyHEX){
-        var peerInfo = importPeerPublicKey(peerPublicKeyHEX);
-        if(false === peerInfo) return null;
-        return peerInfo.pk; // pk is only filtered from above call to import.
-    };
-
-    this.peerFingerprint = function(peerPublicKeyHEX){
-        var peerInfo = importPeerPublicKey(peerPublicKeyHEX);
-        if(false === peerInfo) return null;
-        return peerInfo.fp;
-    };
-
-    this.encrypt = function(peerPublicKeyHEX, plaintext){
-        var peerInfo = importPeerPublicKey(peerPublicKeyHEX);
-        if(false === peerInfo) return null;
-        var sharedsecret = peerInfo.ss;
-    };
-
-    this.decrypt = function(peerPublicKeyHEX, ciphertext){
-        var peerInfo = importPeerPublicKey(peerPublicKeyHEX);
-        if(false === peerInfo) return null;
-        var sharedsecret = peerInfo.ss;
+    this.filterPeer = function(fingerprintList){
+        // all saved peer not in this list will be removed
+        var removeList = [];
+        for(var fp in peers){
+            if(fingerprintList.indexOf(fp) < 0) removeList.push(fp);
+        };
+        for(var i in removeList) delete peers[removeList[i]];
     };
 
     return this;

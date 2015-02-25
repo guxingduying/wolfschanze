@@ -1,16 +1,32 @@
 var http = require('http').createServer(onHTTP),
     url = require('url'),
     fs = require('fs'),
+    buffer = require('buffer'),
     io = require('socket.io')(http);
+
+//////////////////////////////////////////////////////////////////////////////
+
+function sendRoomUpdate(room){
+    var sockets = io.sockets.adapter.rooms[room];
+    var list = {};
+    for (var socketID in sockets){
+        var socket = io.sockets.connected[socketID];
+        list[socketID] = {
+            identity: socket.__data.identity || undefined,
+        };
+    };
+    io.to(room).emit('update', list);
+};
 
 function onSocket(socket){
     socket.__data = {};
 
-    function sendRoomUpdate(room){
-        var list = Object.keys(io.nsps['/'].adapter.rooms[room]);
-        io.to(room).emit('update', list);
-    }
-
+    socket.on('publish identity', function(buf){
+        if(!buffer.Buffer.isBuffer(buf)) return;
+        if(buf.length > 1536) return;
+        socket.__data.identity = buf;
+        if(socket.__data.room) sendRoomUpdate(socket.__data.room);
+    });
     socket.on('join', function(room){
         if(socket.__data.room) return socket.emit('error-join-room');
         if(!/^[0-9a-z]{14,}$/i.test(room))
@@ -28,6 +44,8 @@ function onSocket(socket){
         });
     });
 };
+
+//////////////////////////////////////////////////////////////////////////////
 
 function onHTTP(req, res){
     var urls = url.parse(req.url);
