@@ -1,7 +1,7 @@
 require([
     'client.cipher',
     'socket.io',
-    'neoatlantis-crypto-js'
+    'neoatlantis-crypto-js',
 ], function(
     cipher,
     socketIO,
