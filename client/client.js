@@ -16,7 +16,8 @@ var CONSTANT_NICKNAME_MAXLENGTH = 20,
 var ROOMID = '',
     CIPHER = null,
     MEMBERS = {},
-    LOCALID = null;
+    LOCALID = null,
+    LOCALNAME = null; // TODO i18n
 var socket = socketIO('//');
 
 // ---------- generate a new room id, or use existing one(aka invitied)
@@ -42,6 +43,7 @@ socket.on('connect', function(){
 
     // ------ join room
 
+    socket.emit('publish name', LOCALNAME);
     socket.emit('publish identity', CIPHER.showLocalIdentity());
     socket.on('error-join-room', function(){});
     socket.emit('join', ROOMID);
@@ -80,13 +82,19 @@ socket.on('connect', function(){
                 { id: uid }
             );
             MEMBERS[uid]['identity'] = data[uid].identity;
+            MEMBERS[uid]['name'] = data[uid].name;
             fps.push(MEMBERS[uid]['fingerprint']);
         };
         // call CIPHER to remove unused member registries.
         CIPHER.filterPeer(fps);
+        // get new CIPHER authenticator
+        PAGE({authenticator: CIPHER.getAuthenticator()})
         // update page
         PAGE({members: MEMBERS});
     });
+
+    // ----- initialize page
+    PAGE({localID: LOCALID});
 
 }); // end of 'on socket connection'
 

@@ -13,6 +13,7 @@ function sendRoomUpdate(room){
         var socket = io.sockets.connected[socketID];
         list[socketID] = {
             identity: socket.__data.identity || undefined,
+            name: socket.__data.name || undefined,
         };
     };
     io.to(room).emit('update', list);
@@ -27,6 +28,12 @@ function onSocket(socket){
         socket.__data.identity = buf;
         if(socket.__data.room) sendRoomUpdate(socket.__data.room);
     });
+    socket.on('publish name', function(name){
+        // TODO XXX !!! validate name
+        socket.__data.name = name;
+        if(socket.__data.room) sendRoomUpdate(socket.__data.room);
+    });
+
     socket.on('join', function(room){
         if(socket.__data.room) return socket.emit('error-join-room');
         if(!/^[0-9a-z]{14,}$/i.test(room))
