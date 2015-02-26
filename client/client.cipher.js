@@ -49,6 +49,33 @@ function cipher(localID){
         for(var i in removeList) delete peers[removeList[i]];
     };
 
+    this.encrypt = function(plaintext){
+        var plaintextBuf = crypto.util.encoding(plaintext).toArrayBuffer();
+        var message = crypto.enigma.message();
+        message.write(plaintextBuf);
+        message.sign(LOCALIDENTITY);
+        for(var i in peers){
+            try{
+                message.encrypt(peers[i]);
+            } catch(e){
+                continue;
+            };
+        };
+        return message.done();
+    };
+
+    this.decrypt = function(ciphertext){
+        var ciphertextBuf = crypto.util.encoding(ciphertext).toArrayBuffer();
+        var message = crypto.enigma.message();
+        try{
+            message.read(ciphertextBuf);
+            message.decrypt(LOCALIDENTITY);
+            return message.getPlaintext();
+        } catch(e){
+            return null;
+        };
+    };
+
     return this;
 };
 

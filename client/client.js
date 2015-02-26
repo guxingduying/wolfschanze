@@ -1,8 +1,10 @@
 require([
+    'page',
     'client.cipher',
     'socket.io',
     'neoatlantis-crypto-js',
 ], function(
+    PAGE,
     cipher,
     socketIO,
     crypto
@@ -82,6 +84,8 @@ socket.on('connect', function(){
         };
         // call CIPHER to remove unused member registries.
         CIPHER.filterPeer(fps);
+        // update page
+        PAGE({members: MEMBERS});
     });
 
 }); // end of 'on socket connection'
