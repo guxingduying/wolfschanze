@@ -17,3 +17,17 @@
 #sendbox textarea{
     resize: none;
 }
+
+.history-container{
+    height: 20em;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: #000000;
+    margin-bottom: 1em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
+.history-roller {
+    color: #FFFFFF;
+}

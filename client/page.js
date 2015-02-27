@@ -6,7 +6,9 @@ define([
 //////////////////////////////////////////////////////////////////////////////
 
 // ---------- some global variables
+
 var LOCALID = null, MEMBERS = {};
+
 
 // ---------- event center
 
@@ -57,6 +59,16 @@ function updateLocalID(d){
 function updateAuthenticator(d){
     $('#authenticator').text(d);
 };
+
+
+// ---------- listen to user events
+
+$(function(){
+    $('#send-message').click(function(){
+        var message = $('#new-message').val();
+        emit('send message', message);
+    });
+});
 
 
 // ---------- define return function and event handler

@@ -19,12 +19,14 @@
             <div name="left" class="col-xs-12 col-sm-4 col-md-3 col-lg-3">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Panel title</h3>
+                        <h3 class="panel-title">会话信息</h3>
                     </div>
                     <div class="panel-body">
                         <div style="display: table; width: 100%;">
                             <label style="display: table-cell">我的ID</label>
-                            <span style="display: table-cell;"><input id="localid" type="text" class="line-input" style="width: 100%"/></span>
+                            <span style="display: table-cell;">
+                                <input id="localid" type="text" class="line-input" style="width: 100%"/>
+                            </span>
                         </div>
                     </div>
                     <ul id="members" class="list-group"></ul>
@@ -32,34 +34,44 @@
             </div>
 
             <!-- main section -->
-            <div name="main" class="col-xs-12 col-sm-8 col-md-9 col-lg-9">
-                <div class="container-fluid">
-                    <!-- import info display -->
-                    <div class="row">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3 class="panel-title">
-                                    会话验证代码
-                                    <strong id="authenticator"></strong>
-                                </h3>
-                            </div>
-                            <div class="panel-body">
-                                <form class="form" id="sendbox">
-                                    <div class="col-xs-10 col-sm-11 col-md-11">
-                                        <textarea class="form-control" rows="1"></textarea>
-                                    </div>
-                                    <div class="col-xs-2 col-sm-1 col-md-1">
-                                        <button type="button" class="btn btn-default">Send</button>
-                                    </div>
-                                </form>
-                            </div>
+            <div name="main" class="col-xs-12 col-sm-8 col-md-9 col-lg-9"><div class="container-fluid">
+                <div class="row"><div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            会话验证代码
+                            <strong id="authenticator"></strong>
+                        </h3>
+                    </div>
+                    <div class="panel-body"><form class="form" id="sendbox">
+                        <div class="col-xs-12 col-sm-12 col-md-12"><div class="history-container">
+                            <div class="history-roller">
+                                a<br />
+                                a<br />
+                                a<br />
+                                a<br />
+                                a<br />
+                                a<br />
+                                a<br />
+                                a<br />
+                                a<br />
+                                a<br />
+                                a<br />
+                                a<br />
+                                a<br />
+                                a<br />
+                                a<br />
+                                a<br />
+                            </div></div>
                         </div>
-                    </div>
-                    <!-- main display -->
-                    <div class="row">
-                    </div>
-                </div>
-            </div>
+                        <div class="col-xs-10 col-sm-10 col-md-11">
+                            <textarea id="new-message" class="form-control" rows="1" required></textarea>
+                        </div>
+                        <div class="col-xs-2 col-sm-2 col-md-1">
+                                <button id="send-message" type="button" class="btn btn-primary">发送</button>
+                        </div>
+                    </form></div>
+                </div></div>
+            </div></div><!-- end of main section -->
         </div>
     </div></body>
 </html>

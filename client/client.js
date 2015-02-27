@@ -99,5 +99,11 @@ socket.on('connect', function(){
 }); // end of 'on socket connection'
 
 
+// ---------- listen to page events(user events)
+PAGE.on('send message', function(data){
+    alert(data);
+});
+
+
 //////////////////////////////////////////////////////////////////////////////
 });
