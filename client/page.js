@@ -60,13 +60,22 @@ function updateAuthenticator(d){
     $('#authenticator').text(d);
 };
 
+function updateNewMessage(d){
+    var body = d.body, senderID = d.from;
+    $('#history').append($('<div>').text(body));
+    console.log(d);
+}
+
 
 // ---------- listen to user events
 
 $(function(){
     $('#send-message').click(function(){
-        var message = $('#new-message').val();
+        var message = $('#new-message').val().trim();
+        if(!message) return;
         emit('send message', message);
+        $('#new-message').val('');
+        // TODO display directly to the history
     });
 });
 
@@ -78,6 +87,7 @@ var ret = function update(v){
     if(undefined !== v.members) updateMembers(v.members);
     if(undefined !== v.localID) updateLocalID(v.localID);
     if(undefined !== v.authenticator) updateAuthenticator(v.authenticator);
+    if(undefined !== v.message) updateNewMessage(v.message);
 };
 ret.on = addCallback;
 return ret;

@@ -64,6 +64,16 @@ socket.on('connect', function(){
             MEMBERS[from]['nickname'] = data.nickname;
         };
 
+        // if received a message
+        if(crypto.util.type(data.message).isArrayBuffer()){
+            // TODO confirm message decrypted is signed by the source socket
+            // that we have seen by validating its socketID against signer's
+            // subject. This has to be added to client.cipher.js.
+            var plaintext = CIPHER.decrypt(data.message);
+            plaintext = crypto.util.encoding(plaintext).toUTF16();
+            if(plaintext) PAGE({ message: { body: plaintext, from: from }});
+        };
+
     });
 
     // ------ upon getting member update
@@ -100,8 +110,11 @@ socket.on('connect', function(){
 
 
 // ---------- listen to page events(user events)
+
 PAGE.on('send message', function(data){
-    alert(data);
+    var buf = crypto.util.encoding(data).toArrayBuffer();
+    var ciphertext = CIPHER.encrypt(buf);
+    socket.emit('broadcast', { message: ciphertext });
 });
 
 
