@@ -54,7 +54,7 @@ function cipher(localID){
         for(var i in peers) list.push(i);
         list.sort();
         var joined = list.join(':');
-        return crypto.util.encoding(new crypto.hash(8).hash(
+        return crypto.util.encoding(new crypto.hash(5).hash(
             crypto.util.encoding(joined, 'ascii').toArrayBuffer()
         ).buffer).toBase32();
     };

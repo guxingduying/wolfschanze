@@ -51,6 +51,7 @@ function updateMembers(m){
 function updateLocalID(d){
     LOCALID = d;
     redrawMembers();
+    $('#localid').val(d);
 };
 
 function updateAuthenticator(d){
