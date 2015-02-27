@@ -25,6 +25,26 @@ function emit(name, data){
 
 // ---------- page logic
 
+function redrawMemberIDs(){
+    // set contents of all elements with 'data-socket-id' with associated
+    // user identifying name.
+    $('[data-socket-id]').each(function(){
+        var value = $(this).attr('data-socket-id');
+        var memberInfo = MEMBERS[value];
+        if(!memberInfo){
+            // If user info lost(may due to logged out user), we will try to
+            // preserve already rendered info. But if this is impossible, which
+            // should be rarely so, a 'unknown user' will be rendered.
+            if('' != $(this).text()) return;
+            $(this).text('未知用户');
+        } else {
+            // if we have got member info, we will always try to replace the
+            // display with this new update.
+            $(this).text(MEMBERS[value].name || value);
+        };
+    });
+}
+
 function redrawMembers(){
     $('#members').empty();
     for(var socketID in MEMBERS){
@@ -34,7 +54,7 @@ function redrawMembers(){
             .append(
                 $('<strong>')
                     .addClass('list-group-item-heading')
-                    .text(MEMBERS[socketID].name || socketID)
+                    .attr('data-socket-id', socketID)
             )
             .append(
                 $('<p>')
@@ -42,7 +62,8 @@ function redrawMembers(){
                     .text(MEMBERS[socketID].fingerprint)
             )
         .appendTo('#members');
-    }
+    };
+    redrawMemberIDs();
 };
 
 function updateMembers(m){
@@ -62,9 +83,12 @@ function updateAuthenticator(d){
 
 function updateNewMessage(d){
     var body = d.body, senderID = d.from;
-    $('#history').append($('<div>').text(body));
-    console.log(d);
-}
+    var newEntry = $('<div>').appendTo('#history');
+    newEntry.append($('<span>').attr('data-socket-id', senderID));
+    newEntry.append($('<span>').text('说: '));
+    newEntry.append($('<span>').text(body));
+    redrawMemberIDs();
+};
 
 
 // ---------- listen to user events
