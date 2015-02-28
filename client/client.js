@@ -21,10 +21,19 @@ var ROOMID = '',
 var SECUREMODE = false,
     BLOCK_DEFAULT = false; // Default block level for new joined member
 
-var socketPath = '//neoatlantis.info/socketio-chat';
-if('localhost' == window.location.hostname) socketPath = '//';
+var __CONFIG = {};
+// config socket io url
+if('localhost' == window.location.hostname){
+    __CONFIG.src = '//';
+} else {
+    if('https' == window.location.href.slice(0,5))
+        __CONFIG.src = "https://neoatlantis.info:443/";
+    else
+        __CONFIG.src = "http://neoatlantis.info:80/";
+    __CONFIG.srcPath = '/socketio-chat';
+};
 
-var socket = socketIO(socketpath);
+var socket = socketIO(__CONFIG.src, {path: __CONFIG.srcPath});
 
 // ---------- generate a new room id, or use existing one(aka invitied)
 

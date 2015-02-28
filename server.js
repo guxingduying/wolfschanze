@@ -67,6 +67,11 @@ function onHTTP(req, res){
     var urls = url.parse(req.url);
     var filename = urls.pathname.slice(1);
     if('' == filename) filename = 'index.html';
+    if(!/^[0-9a-z\-\.]+(css|js|html)$/i.test(filename)){
+        res.writeHead(404);
+        res.end();
+        return;
+    };
     var searchPath = './client/' + filename;
     fs.readFile(searchPath, function(err, file){
         if(err){
