@@ -38,6 +38,7 @@
 .history-roller {
     color: #FFFFFF;
     font-family: monospace;
+    word-wrap: break-word;
 }
 
 .history-roller .time{

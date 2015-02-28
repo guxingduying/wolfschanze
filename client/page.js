@@ -176,7 +176,14 @@ $(function(){
 
     $('#toggle-securemode').click(function(){
         emit('toggle securemode');
-    })
+    });
+
+    $('#new-message').keypress(function(e){
+        if (e.ctrlKey && e.keyCode == 13){
+            $('#send-message').click();
+            e.stopPropagation();
+        };
+    });
 });
 
 
