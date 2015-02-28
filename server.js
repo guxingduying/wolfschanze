@@ -21,6 +21,10 @@ function sendRoomUpdate(room){
 
 function onSocket(socket){
     socket.__data = {};
+    
+    socket.on('disconnect', function(){
+        if(socket.__data.room) sendRoomUpdate(socket.__data.room);
+    });
 
     socket.on('publish identity', function(buf){
         if(!buffer.Buffer.isBuffer(buf)) return;
@@ -28,6 +32,7 @@ function onSocket(socket){
         socket.__data.identity = buf;
         if(socket.__data.room) sendRoomUpdate(socket.__data.room);
     });
+
     socket.on('publish name', function(name){
         // TODO XXX !!! validate name
         socket.__data.name = name;
@@ -41,8 +46,8 @@ function onSocket(socket){
         socket.join(room.toLowerCase());
         socket.__data.room = room;
         sendRoomUpdate(room);
-        io.sockets.in(room).on('leave', function(){ sendRoomUpdate(room); });
     });
+
     socket.on('broadcast', function(data){
         if(!socket.__data.room) return;
         io.to(socket.__data.room).emit('broadcast', {

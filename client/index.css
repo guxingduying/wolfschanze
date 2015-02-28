@@ -62,5 +62,5 @@
 
 li.blocked{
     color: #AA0000;
-    text-decoration-line: line-through;
+    text-decoration: line-through;
 }

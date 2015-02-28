@@ -66,6 +66,7 @@ function redrawMembers(){
     // ----- member list
     $('#members').empty();
     for(var socketID in MEMBERS){
+        var member = MEMBERS[socketID];
         if(socketID === LOCALID) continue;
         $('<li>')
             .attr('data-socket-id', socketID)
@@ -85,7 +86,7 @@ function redrawMembers(){
                 })
                     .addClass('btn btn-link')
                     .attr('data-socket-id', socketID)
-                    .text('屏蔽/解除屏蔽')
+                    .text((member.blocked?'解除屏蔽':'点击屏蔽'))
                     .click(handleMemberBlocking)
             )
         .appendTo('#members');
