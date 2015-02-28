@@ -81,12 +81,17 @@ function updateAuthenticator(d){
     $('#authenticator').text(d);
 };
 
-function updateNewMessage(d){
+function updateNewMessage(d, local){
     var body = d.body, senderID = d.from;
     var newEntry = $('<div>').appendTo('#history');
-    newEntry.append($('<span>').attr('data-socket-id', senderID));
+    newEntry.append(
+        $('<span>').addClass((local?'author-local':'author-remote'))
+            .append($('<span>').text('['))
+            .append($('<span>').attr('data-socket-id', senderID))
+            .append($('<span>').text(']'))
+    );
     newEntry.append($('<span>').text('说: '));
-    newEntry.append($('<span>').text(body));
+    newEntry.append($('<span>').text(body).addClass('text'));
     redrawMemberIDs();
 };
 
@@ -99,7 +104,7 @@ $(function(){
         if(!message) return;
         emit('send message', message);
         $('#new-message').val('');
-        // TODO display directly to the history
+        updateNewMessage({ body: message, from: LOCALID }, true);
     });
 });
 
@@ -111,7 +116,7 @@ var ret = function update(v){
     if(undefined !== v.members) updateMembers(v.members);
     if(undefined !== v.localID) updateLocalID(v.localID);
     if(undefined !== v.authenticator) updateAuthenticator(v.authenticator);
-    if(undefined !== v.message) updateNewMessage(v.message);
+    if(undefined !== v.message) updateNewMessage(v.message, false);
 };
 ret.on = addCallback;
 return ret;

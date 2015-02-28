@@ -30,4 +30,21 @@
 
 .history-roller {
     color: #FFFFFF;
+    font-family: monospace;
+}
+
+.history-roller .time{
+    color: #00CC00;
+}
+
+.history-roller .author-local{
+    color: #AA0000;
+}
+
+.history-roller .author-remote{
+    color: #0000FF;
+}
+
+.history-roller .text{
+    color: #FFFFFF;
 }
