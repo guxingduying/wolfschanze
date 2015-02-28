@@ -7,7 +7,7 @@ define([
 
 // ---------- some global variables
 
-var LOCALID = null, MEMBERS = {};
+var LOCALID = null, LOCALFINGERPRINT = null, MEMBERS = {};
 
 
 // ---------- event center
@@ -74,7 +74,15 @@ function updateMembers(m){
 function updateLocalID(d){
     LOCALID = d;
     redrawMembers();
-    $('#localid').val(d);
+    $('#localid').val(d); // PROBLEM: TODO when localName is passed using PAGE() function from client, here should display
+                          // the localName. This has to be done in another redraw function, not update function. separate
+                          // it!
+};
+
+function updateLocalFingerprint(d){
+    LOCALFINGERPRINT = d;
+    redrawMembers();
+    $('#localfingerprint').val(d);
 };
 
 function updateAuthenticator(d){
@@ -122,6 +130,7 @@ var ret = function update(v){
     // use this function to update the page with given parameters
     if(undefined !== v.members) updateMembers(v.members);
     if(undefined !== v.localID) updateLocalID(v.localID);
+    if(undefined !== v.localFingerprint) updateLocalFingerprint(v.localFingerprint);
     if(undefined !== v.authenticator) updateAuthenticator(v.authenticator);
     if(undefined !== v.message) updateNewMessage(v.message, false);
 };
