@@ -21,7 +21,7 @@ function sendRoomUpdate(room){
 
 function onSocket(socket){
     socket.__data = {};
-    
+
     socket.on('disconnect', function(){
         if(socket.__data.room) sendRoomUpdate(socket.__data.room);
     });
@@ -34,7 +34,9 @@ function onSocket(socket){
     });
 
     socket.on('publish name', function(name){
-        // TODO XXX !!! validate name
+        if('string' != typeof name) name = socket.id;
+        name = name.trim();
+        if(name.length > 14 || name.length < 1) name = socket.id;
         socket.__data.name = name;
         if(socket.__data.room) sendRoomUpdate(socket.__data.room);
     });

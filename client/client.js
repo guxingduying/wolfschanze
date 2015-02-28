@@ -100,22 +100,37 @@ socket.on('update', function(data){
     var del = [];
     for(var uid in MEMBERS) if(!data[uid]) del.push(uid);
     for(var i in del) delete MEMBERS[del[i]];
-    // add new members not known
+    // synchronize members
     var fps = [];
     for(var uid in data){
-        if(!MEMBERS[uid]) MEMBERS[uid] = {};
-        MEMBERS[uid]['fingerprint'] = CIPHER.setPeer(
-            data[uid].identity,
-            { id: uid }
-        );
-        MEMBERS[uid]['identity'] = data[uid].identity;
+        var newAppeared = false;
+        // if no record found: definitely new.
+        if(!MEMBERS[uid]){
+            MEMBERS[uid] = {};
+            newAppeared = true;
+        };
+        // or if broadcasted identity is new, regarded as new
+        if(!crypto.util.buffer.equal(
+            MEMBERS[uid].identity,
+            data[uid].identity
+        )){
+            newAppeared = true;
+            MEMBERS[uid]['fingerprint'] = CIPHER.setPeer(
+                data[uid].identity,
+                { id: uid }
+            );
+            MEMBERS[uid]['identity'] = data[uid].identity;
+        };
+        // anyway, record the name
         MEMBERS[uid]['name'] = data[uid].name;
-        if(BLOCK_DEFAULT){
+        // what to do for new identities
+        if(newAppeared && BLOCK_DEFAULT){
             // TODO this duplicates PAGE.on('toggle block') function.
             //      Consider another way to synchronize MEMBERS state to CIPHER.
             MEMBERS[uid]['blocked'] = true;
             CIPHER.blacklistFingerprint(MEMBERS[uid]['fingerprint']);
         };
+        // anyway, record this fingerprint for CIPHER filtering
         fps.push(MEMBERS[uid]['fingerprint']);
     };
     // call CIPHER to remove unused member registries.
