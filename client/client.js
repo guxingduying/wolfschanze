@@ -117,6 +117,10 @@ PAGE.on('send message', function(data){
     socket.emit('broadcast', { message: ciphertext });
 });
 
+PAGE.on('change nickname', function(nickname){
+    socket.emit('publish name', nickname);
+});
+
 
 //////////////////////////////////////////////////////////////////////////////
 });

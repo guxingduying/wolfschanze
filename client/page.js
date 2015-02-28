@@ -106,6 +106,13 @@ $(function(){
         $('#new-message').val('');
         updateNewMessage({ body: message, from: LOCALID }, true);
     });
+
+    $('#localid').focusout(function(){
+        $(this).removeClass('changing');
+        emit('change nickname', $(this).val());
+    }).keypress(function(){
+        $(this).addClass('changing');
+    })
 });
 
 
