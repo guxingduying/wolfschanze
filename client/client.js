@@ -130,6 +130,17 @@ PAGE.on('change nickname', function(nickname){
     socket.emit('publish name', LOCALNAME);
 });
 
+PAGE.on('toggle block', function(socketID){
+    if(!MEMBERS[socketID]) return;
+    MEMBERS[socketID].blocked = !Boolean(MEMBERS[socketID].blocked);
+    if(MEMBERS[socketID].blocked)
+        CIPHER.blacklistFingerprint(MEMBERS[socketID]['fingerprint']);
+    else
+        CIPHER.unblacklistFingerprint(MEMBERS[socketID]['fingerprint']);
+    PAGE({members: MEMBERS});
+});
+
+
 
 //////////////////////////////////////////////////////////////////////////////
 });

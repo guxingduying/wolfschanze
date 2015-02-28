@@ -25,10 +25,17 @@ function emit(name, data){
 
 // ---------- page logic
 
+function handleMemberBlocking(){
+    // on blocking button pressed
+    var socketID = $(this).attr('data-socket-id');
+    emit('toggle block', socketID);
+};
+
+
 function redrawMemberIDs(){
     // set contents of all elements with 'data-socket-id' with associated
     // user identifying name.
-    $('[data-socket-id]').each(function(){
+    $('p,strong,span[data-socket-id]').each(function(){
         var value = $(this).attr('data-socket-id');
         var memberInfo = MEMBERS[value];
         if(!memberInfo){
@@ -43,7 +50,14 @@ function redrawMemberIDs(){
             $(this).text(MEMBERS[value].name || value);
         };
     });
-}
+    $('li[data-socket-id]').each(function(){
+        var socketID = $(this).attr('data-socket-id');
+        if(MEMBERS[socketID].blocked)
+            $(this).addClass('blocked');
+        else
+            $(this).removeClass('blocked');
+    });
+};
 
 function redrawMembers(){
     // ----- local info
@@ -54,6 +68,7 @@ function redrawMembers(){
     for(var socketID in MEMBERS){
         if(socketID === LOCALID) continue;
         $('<li>')
+            .attr('data-socket-id', socketID)
             .addClass('list-group-item')
             .append(
                 $('<strong>')
@@ -64,6 +79,14 @@ function redrawMembers(){
                 $('<p>')
                     .addClass('list-group-item-text')
                     .text(MEMBERS[socketID].fingerprint)
+            )
+            .append(
+                $('<button>', {
+                })
+                    .addClass('btn btn-link')
+                    .attr('data-socket-id', socketID)
+                    .text('屏蔽/解除屏蔽')
+                    .click(handleMemberBlocking)
             )
         .appendTo('#members');
     };
@@ -144,7 +167,7 @@ $(function(){
 
     $('#history-container').scroll(function(){
         console.log($(this).scrollTop());
-    })
+    });
 });
 
 

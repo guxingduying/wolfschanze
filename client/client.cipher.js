@@ -11,6 +11,18 @@ function cipher(localID){
     var LOCALIDENTITY = crypto.enigma.identity();
     LOCALIDENTITY.generate(localID, { algorithm: 'NECRAC128' });
 
+    var blacklist = {};
+
+    this.blacklistFingerprint = function(fingerprint){
+        if(!crypto.util.type(fingerprint).isString()) return;
+        blacklist[fingerprint] = true;
+    };
+
+    this.unblacklistFingerprint = function(fingerprint){
+        if(!crypto.util.type(fingerprint).isString()) return;
+        delete blacklist[fingerprint];
+    };
+
     this.showLocalIdentity = function(){
         return LOCALIDENTITY.exportPublic();
     };
@@ -65,6 +77,7 @@ function cipher(localID){
         message.write(plaintextBuf);
         message.sign(LOCALIDENTITY);
         for(var i in peers){
+            if(true === blacklist[i]) continue; // if this has been blocked
             try{
                 message.encrypt(peers[i]);
             } catch(e){
