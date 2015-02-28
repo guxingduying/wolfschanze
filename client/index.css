@@ -1,3 +1,7 @@
+#main{
+    display: none;
+}
+
 .full-height{
     max-height: 100%;
     height: 100%;
@@ -27,9 +31,8 @@
     overflow-x: hidden;
     overflow-y: auto;
     background-color: #000000;
-    margin-bottom: 1em;
-    padding-left: 0.5em;
-    padding-right: 0.5em;
+    margin-top: 1em;
+    padding: 0.5em;
 }
 
 .history-roller {
@@ -42,13 +45,17 @@
 }
 
 .history-roller .author-local{
-    color: #AA0000;
+    color: #FF9999;
 }
 
 .history-roller .author-remote{
-    color: #0000FF;
+    color: #9999FF;
 }
 
 .history-roller .text{
     color: #FFFFFF;
+}
+
+#sendbox{
+    display: none;
 }

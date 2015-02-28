@@ -36,6 +36,8 @@ if(/^[0-9a-z]{14,}$/.test(urlhash)){
 // ---------- handle connection specific initialization
 
 socket.on('connect', function(){
+    // when connection established, or reconnected.
+
     MEMBERS = {};
     LOCALID = socket.io.engine.id;
     CIPHER = new cipher(LOCALID);
@@ -48,12 +50,13 @@ socket.on('connect', function(){
     socket.on('error-join-room', function(){});
     socket.emit('join', ROOMID);
 
-    // ----- initialize page
+    // ----- initialize/update page
 
     PAGE({
         localName: LOCALNAME,
         localID: LOCALID,
         localFingerprint: CIPHER.showLocalFingerprint(),
+        connected: true,
     });
 
 });

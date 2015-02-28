@@ -13,7 +13,7 @@
             })
         </script>
     </head>
-    <body><div class="container-fluid">
+    <body><div id="nojs">本页面需要JavaScript才能浏览。</div><div class="container-fluid" id="main">
         <div class="row">
             <!-- left section -->
             <div name="left" class="col-xs-12 col-sm-4 col-md-3 col-lg-3">
@@ -31,7 +31,7 @@
                         <div style="display: table; width: 100%;">
                             <label style="display: table-cell">指纹</label>
                             <span style="display: table-cell;">
-                                <input id="localfingerprint" type="text" clas="line-input" style="width: 100%"/>
+                                <input id="localfingerprint" type="text" clas="line-input" style="width: 100%" readonly/>
                             </span>
                         </div>
                     </div>
@@ -48,17 +48,22 @@
                             <strong id="authenticator"></strong>
                         </h3>
                     </div>
-                    <div class="panel-body"><form class="form" id="sendbox">
-                        <div class="col-xs-12 col-sm-12 col-md-12"><div class="history-container">
-                            <div id="history" class="history-roller"></div>
-                        </div></div>
-                        <div class="col-xs-10 col-sm-10 col-md-11">
-                            <textarea id="new-message" class="form-control" rows="1" required></textarea>
+                    <div class="panel-body">
+                        <form class="form" id="sendbox">
+                            <div class="col-xs-10 col-sm-10 col-md-11">
+                                <input id="new-message" class="form-control" required />
+                            </div>
+                            <div class="col-xs-2 col-sm-2 col-md-1">
+                                    <button id="send-message" type="button" class="btn btn-primary">发送</button>
+                            </div>
+                            <div class="col-xs-12 col-sm-12 col-md-12"><div class="history-container">
+                                <div id="history" class="history-roller"></div>
+                            </div></div>
+                        </form>
+                        <div class="alert alert-info" id="sendbox-cover">
+                            正在连接到服务器，请稍候...
                         </div>
-                        <div class="col-xs-2 col-sm-2 col-md-1">
-                                <button id="send-message" type="button" class="btn btn-primary">发送</button>
-                        </div>
-                    </form></div>
+                    </div>
                 </div></div>
             </div></div><!-- end of main section -->
         </div>

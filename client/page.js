@@ -7,7 +7,7 @@ define([
 
 // ---------- some global variables
 
-var LOCALID = null, LOCALFINGERPRINT = null, MEMBERS = {};
+var LOCALID = null, LOCALNAME = null, LOCALFINGERPRINT = null, MEMBERS = {};
 
 
 // ---------- event center
@@ -46,6 +46,10 @@ function redrawMemberIDs(){
 }
 
 function redrawMembers(){
+    // ----- local info
+    $('#localid').val((LOCALNAME?LOCALNAME:LOCALID));
+    $('#localfingerprint').val(LOCALFINGERPRINT);
+    // ----- member list
     $('#members').empty();
     for(var socketID in MEMBERS){
         if(socketID === LOCALID) continue;
@@ -66,6 +70,12 @@ function redrawMembers(){
     redrawMemberIDs();
 };
 
+function redrawInput(){
+    $('#sendbox-cover').hide();
+    $('#sendbox').show();
+};
+
+
 function updateMembers(m){
     MEMBERS = m;
     redrawMembers();
@@ -74,15 +84,16 @@ function updateMembers(m){
 function updateLocalID(d){
     LOCALID = d;
     redrawMembers();
-    $('#localid').val(d); // PROBLEM: TODO when localName is passed using PAGE() function from client, here should display
-                          // the localName. This has to be done in another redraw function, not update function. separate
-                          // it!
 };
+
+function updateLocalName(d){
+    LOCALNAME = d;
+    redrawMembers();
+}
 
 function updateLocalFingerprint(d){
     LOCALFINGERPRINT = d;
     redrawMembers();
-    $('#localfingerprint').val(d);
 };
 
 function updateAuthenticator(d){
@@ -91,7 +102,7 @@ function updateAuthenticator(d){
 
 function updateNewMessage(d, local){
     var body = d.body, senderID = d.from;
-    var newEntry = $('<div>').appendTo('#history');
+    var newEntry = $('<div>').prependTo('#history');
     newEntry.append(
         $('<span>').addClass((local?'author-local':'author-remote'))
             .append($('<span>').text('['))
@@ -103,10 +114,18 @@ function updateNewMessage(d, local){
     redrawMemberIDs();
 };
 
+function updateConnected(d){
+    if(true !== d) return;
+    redrawInput();
+};
+
 
 // ---------- listen to user events
 
 $(function(){
+    $('#main').show();
+    $('#nojs').hide();
+
     $('#send-message').click(function(){
         var message = $('#new-message').val().trim();
         if(!message) return;
@@ -117,9 +136,14 @@ $(function(){
 
     $('#localid').focusout(function(){
         $(this).removeClass('changing');
-        emit('change nickname', $(this).val());
+        LOCALNAME = $(this).val();
+        emit('change nickname', LOCALNAME);
     }).keypress(function(){
         $(this).addClass('changing');
+    });
+
+    $('#history-container').scroll(function(){
+        console.log($(this).scrollTop());
     })
 });
 
@@ -130,9 +154,11 @@ var ret = function update(v){
     // use this function to update the page with given parameters
     if(undefined !== v.members) updateMembers(v.members);
     if(undefined !== v.localID) updateLocalID(v.localID);
+    if(undefined !== v.localName) updateLocalName(v.localName);
     if(undefined !== v.localFingerprint) updateLocalFingerprint(v.localFingerprint);
     if(undefined !== v.authenticator) updateAuthenticator(v.authenticator);
     if(undefined !== v.message) updateNewMessage(v.message, false);
+    if(undefined !== v.connected) updateConnected(v.connected);
 };
 ret.on = addCallback;
 return ret;
