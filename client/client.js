@@ -21,7 +21,10 @@ var ROOMID = '',
 var SECUREMODE = false,
     BLOCK_DEFAULT = false; // Default block level for new joined member
 
-var socket = socketIO('//');
+var socketPath = '//neoatlantis.info/socketio-chat';
+if('localhost' == window.location.hostname) socketPath = '//';
+
+var socket = socketIO(socketpath);
 
 // ---------- generate a new room id, or use existing one(aka invitied)
 

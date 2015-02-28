@@ -4,6 +4,8 @@ var http = require('http').createServer(onHTTP),
     buffer = require('buffer'),
     io = require('socket.io')(http);
 
+var CONFIG = JSON.parse(fs.readFileSync('./config.json'));
+
 //////////////////////////////////////////////////////////////////////////////
 
 function sendRoomUpdate(room){
@@ -66,7 +68,6 @@ function onHTTP(req, res){
     var filename = urls.pathname.slice(1);
     if('' == filename) filename = 'index.html';
     var searchPath = './client/' + filename;
-    console.log(searchPath);
     fs.readFile(searchPath, function(err, file){
         if(err){
             res.writeHead(404);
@@ -78,5 +79,5 @@ function onHTTP(req, res){
     });
 };
 
-http.listen(1800);
+http.listen(CONFIG.port);
 io.on('connection', onSocket);
