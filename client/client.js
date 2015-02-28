@@ -18,6 +18,9 @@ var ROOMID = '',
     MEMBERS = {},
     LOCALID = null,
     LOCALNAME = null; // TODO i18n
+var SECUREMODE = false,
+    BLOCK_DEFAULT = false; // Default block level for new joined member
+
 var socket = socketIO('//');
 
 // ---------- generate a new room id, or use existing one(aka invitied)
@@ -57,6 +60,7 @@ socket.on('connect', function(){
         localID: LOCALID,
         localFingerprint: CIPHER.showLocalFingerprint(),
         connected: true,
+        securemode: SECUREMODE,
     });
 
 });
@@ -106,6 +110,12 @@ socket.on('update', function(data){
         );
         MEMBERS[uid]['identity'] = data[uid].identity;
         MEMBERS[uid]['name'] = data[uid].name;
+        if(BLOCK_DEFAULT){
+            // TODO this duplicates PAGE.on('toggle block') function.
+            //      Consider another way to synchronize MEMBERS state to CIPHER.
+            MEMBERS[uid]['blocked'] = true;
+            CIPHER.blacklistFingerprint(MEMBERS[uid]['fingerprint']);
+        };
         fps.push(MEMBERS[uid]['fingerprint']);
     };
     // call CIPHER to remove unused member registries.
@@ -139,6 +149,12 @@ PAGE.on('toggle block', function(socketID){
         CIPHER.unblacklistFingerprint(MEMBERS[socketID]['fingerprint']);
     PAGE({members: MEMBERS});
 });
+
+PAGE.on('toggle securemode', function(){
+    SECUREMODE = !Boolean(SECUREMODE);
+    BLOCK_DEFAULT = SECUREMODE;
+    PAGE({ securemode: SECUREMODE });
+})
 
 
 

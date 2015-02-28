@@ -143,6 +143,10 @@ function updateConnected(d){
     redrawInput();
 };
 
+function updateSecuremode(d){
+    $('#toggle-securemode').text((d?'安全模式已启动:点击关闭':'安全模式已关闭:点击启动'));
+};
+
 
 // ---------- listen to user events
 
@@ -169,6 +173,10 @@ $(function(){
     $('#history-container').scroll(function(){
         console.log($(this).scrollTop());
     });
+
+    $('#toggle-securemode').click(function(){
+        emit('toggle securemode');
+    })
 });
 
 
@@ -183,6 +191,7 @@ var ret = function update(v){
     if(undefined !== v.authenticator) updateAuthenticator(v.authenticator);
     if(undefined !== v.message) updateNewMessage(v.message, false);
     if(undefined !== v.connected) updateConnected(v.connected);
+    if(undefined !== v.securemode) updateSecuremode(v.securemode);
 };
 ret.on = addCallback;
 return ret;
