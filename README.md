@@ -13,8 +13,9 @@ Getting Started
 
 ### Server
 
-To start the server, just use the `./start.sh`. It requires `supervisor`
-installed to call NodeJS and run the server in backend.
+To start the server, first use `npm install` to have all dependencies installed.
+Then just use the `./start.sh`. It requires `supervisor` installed to call
+NodeJS and run the server in backend.
 
 The server listens on a port specified in `config.json`(create it by yourself):
 
@@ -54,6 +55,6 @@ the local port 1800:
 
 ### Client
 
-You may change the `client/client.js`(at round line 30) to set socket IO to
+You may change the `client/client.js`(at round line 30) to set socket IO 
 connect your server. If you use above script to configure your server, socket.io
 connects your server at a path like: `http(s)://SERVER_DOMAIN/socketio-chat`.
