@@ -179,7 +179,7 @@ $(function(){
     });
 
     $('#new-message').keypress(function(e){
-        if (e.ctrlKey && e.keyCode == 13){
+        if (e.ctrlKey && (10 == e.keyCode || 13 == e.keyCode)){
             $('#send-message').click();
         };
     });
